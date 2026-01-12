@@ -1,0 +1,27 @@
+{
+    "telegram": {
+        "bot_token": "YOUR_BOT_TOKEN_HERE",
+        "chat_id": "YOUR_CHAT_ID_HERE"
+    },
+    "region": "us",
+    "thresholds": {
+        "min_usd_value": 50000
+    },
+    "watchlist": [
+        {
+            "symbol": "BTC/USDT",
+            "exchange": "binance_futures",
+            "alert_threshold": 1000000
+        },
+        {
+            "symbol": "ETH/USDT",
+            "exchange": "binance_futures",
+            "alert_threshold": 500000
+        },
+        {
+            "symbol": "PEPE/USDT",
+            "exchange": "binance_spot",
+            "alert_threshold": 20000
+        }
+    ]
+}
