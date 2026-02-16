@@ -282,7 +282,7 @@ async def gemini_listener():
     await asyncio.gather(*[watch_gemini_symbol(c) for c in gemini_coins])
 
 # ============================================================
-# ENGINE 4: BINANCE WEBSOCKET
+# ENGINE 4: BINANCE WEBSOCKET (via proxy)
 # ============================================================
 async def binance_listener():
     if not config:
@@ -304,40 +304,75 @@ async def binance_listener():
     
     url = f"wss://stream.binance.com:9443/stream?streams={'/'.join(streams)}"
     
+    # Check for proxy config
+    proxy_cfg = config.get('proxy', {})
+    proxy_url = proxy_cfg.get('url') if proxy_cfg.get('enabled') else None
+    
     while True:
         try:
-            logger.info(f"Connecting to Binance for: {[x['symbol'] for x in binance_coins]}...")
-            async with websockets.connect(url) as ws:
-                msg_count = 0
-                while True:
-                    message = await ws.recv()
-                    data = json.loads(message)
-                    if data.get('data'):
-                        data = data['data']
-                    if data.get("e") == "aggTrade":
-                        symbol = data['s']
-                        price = float(data['p'])
-                        qty = float(data['q'])
-                        is_buyer_maker = data['m']
-                        side = "sell" if is_buyer_maker else "buy"
-                        usd_value = price * qty
-                        
-                        msg_count += 1
-                        if msg_count <= 5:
-                            logger.info(f"[Binance] #{msg_count} {symbol} {side.upper()} ${usd_value:,.2f}")
-                        
-                        limit = thresholds.get(symbol, 500000)
-                        if usd_value >= limit:
-                            logger.info(f"🐋 WHALE on Binance {symbol}: {side.upper()} ${usd_value:,.2f}")
-                            alert_msg = format_exchange_alert(symbol, side, price, qty, usd_value, "Binance")
-                            send_telegram_alert(alert_msg)
+            if proxy_url:
+                logger.info(f"Connecting to Binance via PROXY for: {[x['symbol'] for x in binance_coins]}...")
+                # Use aiohttp for proxy WebSocket support
+                async with aiohttp.ClientSession() as session:
+                    async with session.ws_connect(url, proxy=proxy_url, ssl=False) as ws:
+                        msg_count = 0
+                        async for msg in ws:
+                            if msg.type == aiohttp.WSMsgType.TEXT:
+                                data = json.loads(msg.data)
+                                if data.get('data'):
+                                    data = data['data']
+                                if data.get("e") == "aggTrade":
+                                    symbol = data['s']
+                                    price = float(data['p'])
+                                    qty = float(data['q'])
+                                    is_buyer_maker = data['m']
+                                    side = "sell" if is_buyer_maker else "buy"
+                                    usd_value = price * qty
+                                    
+                                    msg_count += 1
+                                    if msg_count <= 5:
+                                        logger.info(f"[Binance] #{msg_count} {symbol} {side.upper()} ${usd_value:,.2f}")
+                                    
+                                    limit = thresholds.get(symbol, 500000)
+                                    if usd_value >= limit:
+                                        logger.info(f"\U0001F40B WHALE on Binance {symbol}: {side.upper()} ${usd_value:,.2f}")
+                                        alert_msg = format_exchange_alert(symbol, side, price, qty, usd_value, "Binance")
+                                        send_telegram_alert(alert_msg)
+                            elif msg.type in (aiohttp.WSMsgType.CLOSED, aiohttp.WSMsgType.ERROR):
+                                break
+            else:
+                logger.info(f"Connecting to Binance (direct) for: {[x['symbol'] for x in binance_coins]}...")
+                async with websockets.connect(url) as ws:
+                    msg_count = 0
+                    while True:
+                        message = await ws.recv()
+                        data = json.loads(message)
+                        if data.get('data'):
+                            data = data['data']
+                        if data.get("e") == "aggTrade":
+                            symbol = data['s']
+                            price = float(data['p'])
+                            qty = float(data['q'])
+                            is_buyer_maker = data['m']
+                            side = "sell" if is_buyer_maker else "buy"
+                            usd_value = price * qty
+                            
+                            msg_count += 1
+                            if msg_count <= 5:
+                                logger.info(f"[Binance] #{msg_count} {symbol} {side.upper()} ${usd_value:,.2f}")
+                            
+                            limit = thresholds.get(symbol, 500000)
+                            if usd_value >= limit:
+                                logger.info(f"\U0001F40B WHALE on Binance {symbol}: {side.upper()} ${usd_value:,.2f}")
+                                alert_msg = format_exchange_alert(symbol, side, price, qty, usd_value, "Binance")
+                                send_telegram_alert(alert_msg)
                             
         except websockets.ConnectionClosed:
             logger.warning("Binance connection closed. Reconnecting in 5s...")
             await asyncio.sleep(5)
         except Exception as e:
-            logger.error(f"Binance error: {e}. Reconnecting in 30s...")
-            await asyncio.sleep(30)
+            logger.error(f"Binance error: {e}. Reconnecting in 10s...")
+            await asyncio.sleep(10)
 
 # ============================================================
 # ENGINE 5: OKX WEBSOCKET

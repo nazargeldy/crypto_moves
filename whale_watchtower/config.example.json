@@ -3,6 +3,10 @@
         "bot_token": "YOUR_BOT_TOKEN_HERE",
         "chat_id": "YOUR_CHAT_ID_HERE"
     },
+    "proxy": {
+        "enabled": false,
+        "url": "http://user:pass@ip:port"
+    },
     "thresholds": {
         "min_usd_value": 50000
     },
