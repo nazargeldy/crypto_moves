@@ -3,25 +3,39 @@
         "bot_token": "YOUR_BOT_TOKEN_HERE",
         "chat_id": "YOUR_CHAT_ID_HERE"
     },
-    "region": "us",
     "thresholds": {
         "min_usd_value": 50000
     },
     "watchlist": [
-        {
-            "symbol": "BTC/USDT",
-            "exchange": "binance_futures",
-            "alert_threshold": 1000000
-        },
-        {
-            "symbol": "ETH/USDT",
-            "exchange": "binance_futures",
-            "alert_threshold": 500000
-        },
-        {
-            "symbol": "PEPE/USDT",
-            "exchange": "binance_spot",
-            "alert_threshold": 20000
-        }
+        {"symbol": "BTC-USD", "exchange": "coinbase", "alert_threshold": 500000},
+        {"symbol": "ETH-USD", "exchange": "coinbase", "alert_threshold": 250000},
+        {"symbol": "SOL-USD", "exchange": "coinbase", "alert_threshold": 100000},
+
+        {"symbol": "BTC/USD", "exchange": "kraken", "alert_threshold": 500000},
+        {"symbol": "ETH/USD", "exchange": "kraken", "alert_threshold": 250000},
+
+        {"symbol": "btcusd", "exchange": "gemini", "alert_threshold": 500000},
+        {"symbol": "ethusd", "exchange": "gemini", "alert_threshold": 250000},
+
+        {"symbol": "BTCUSDT", "exchange": "binance", "alert_threshold": 500000},
+        {"symbol": "ETHUSDT", "exchange": "binance", "alert_threshold": 250000},
+
+        {"symbol": "BTC-USDT", "exchange": "okx", "alert_threshold": 500000},
+        {"symbol": "ETH-USDT", "exchange": "okx", "alert_threshold": 250000},
+
+        {"symbol": "BTCUSDT", "exchange": "bybit", "alert_threshold": 500000},
+        {"symbol": "ETHUSDT", "exchange": "bybit", "alert_threshold": 250000},
+
+        {"symbol": "BTCUSDT", "exchange": "bitget", "alert_threshold": 500000},
+        {"symbol": "ETHUSDT", "exchange": "bitget", "alert_threshold": 250000},
+
+        {"symbol": "BTC-USDT", "exchange": "kucoin", "alert_threshold": 500000},
+        {"symbol": "ETH-USDT", "exchange": "kucoin", "alert_threshold": 250000},
+
+        {"symbol": "BTC_USDT", "exchange": "gateio", "alert_threshold": 500000},
+        {"symbol": "ETH_USDT", "exchange": "gateio", "alert_threshold": 250000},
+
+        {"symbol": "BRETT", "exchange": "dex_base", "token_address": "0x532f27101965dd16442E59d40670FaF5eBB142E4", "alert_threshold": 20000},
+        {"symbol": "TOSHI", "exchange": "dex_base", "token_address": "0xAC1Bd2486aAf3B5C0fc3Fd868558b082a531B2B4", "alert_threshold": 10000}
     ]
 }
