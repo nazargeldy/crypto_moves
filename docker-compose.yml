@@ -1,0 +1,16 @@
+version: "3.8"
+
+services:
+  watchtower:
+    build: .
+    container_name: whale-watchtower
+    restart: always
+    volumes:
+      - ./whale_watchtower/config.json:/app/whale_watchtower/config.json:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
