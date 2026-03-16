@@ -78,11 +78,12 @@ Edit `whale_watchtower/config.json`:
 ```
 
 **Default Thresholds:**
-- BTC: $500,000+
-- ETH: $250,000+  
-- SOL: $100,000+
-- DOGE/PEPE: $50,000+
-- BRETT: $20,000+
+- BTC: $1,500,000+
+- ETH: $1,000,000+  
+- SOL: $500,000+
+- DOGE/PEPE: $200,000+
+- BRETT: $75,000+
+- TOSHI: $50,000+
 
 ## 📈 Sample Alert
 
